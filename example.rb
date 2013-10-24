@@ -165,6 +165,14 @@ class Example
     v =~-> { [17, one.two.three, 23] }
     puts one.two.three                        # => 19
 
+    # specify the same variable multiple times in the pattern
+    # to require those parts to match
+    puts ([1,2,3] =~-> { [x,2,x] }).inspect   # => nil
+    puts ([1,2,1] =~-> { [x,2,x] }).inspect   # => #<OpenStruct x=1>
+
+    # use wildcards (underscore) when you don't care
+    puts ([1, 2, 'ack!$&@'] =~-> { [1, 2, _] }).inspect # => #<OpenStruct>
+    puts ([1, 2, 'ack!$&@'] =~-> { [1, 2, 3] }).inspect # => nil
 
     OutputAnnotator.uninstall
     OutputAnnotator.save(45)
