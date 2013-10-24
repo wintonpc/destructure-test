@@ -71,6 +71,10 @@ class Example
     puts c.inspect                            # => nil
 
 
+    # motivating examples:
+    # * method argument matching
+    # * java -> ruby code converter
+    # * client side of API
 
 
     # let's see what we can do within the confines of Ruby's syntax...
@@ -103,21 +107,64 @@ class Example
     puts a                                    # => 1
     puts b                                    # => 2
 
+    # order doesn't matter. the pattern specifies a subset that must match
     v = { q: 5, r: 9, p: 42, s: 99 }
     v =~-> { { p: a, r: b } }
     puts a                                    # => 42
     puts b                                    # => 9
 
-    # it subsumes built-in functionality
+    # objects
+
+    # work similarly to a hash
+    v = Widget.new('gibble', 8)
+    v =~-> { Object[flange: a, sprocket: b] }
+    puts a                                    # => gibble
+    puts b                                    # => 8
+
+    # bind to the attribute names, for simplicity
+    v =~-> { Object[flange, sprocket] }
+    puts flange                               # => gibble
+    puts sprocket                             # => 8
+
+    # lock down the acceptable type
+    match_result = v =~-> { OpenStruct[flange, sprocket] }
+    puts match_result.inspect                 # => nil
+
+    # pattern fields must be present, else match fails
+    match_result = v =~-> { Object[flange, sprocket, whizz] }
+    puts match_result.inspect                 # => nil
+
+    # it subsumes built-in functionality:
+
     # regexes
     v = [1, 2, 'hello, bob']
     v =~-> { [a, b, /hello, (?<name>\w+)/] }
     puts a                                    # => 1
     puts b                                    # => 2
     puts name                                 # => bob
+
     # splatting
     v = [1,2,3,4,5,6,7,8,9]
-    v =~-> { [1,2] }
+    v =~-> { [1,2,@@stuff, 9] }               # '@@' indicates a splat
+    puts stuff.inspect                        # => [3, 4, 5, 6, 7, 8]
+
+    # pattern variables can be pretty much anything that goes on
+    # the left hand side of an assignment
+    v = [1,4,9]
+    v =~-> { [1, @my_var, 9] }
+    puts @my_var                              # => 4
+
+    basket = {}
+    v = [1,4,9]
+    v =~-> { [1, basket[:thing_i_found], 9] }
+    puts basket[:thing_i_found]               # => 4
+
+    one = OpenStruct.new
+    one.two = OpenStruct.new
+    v = [17,19,23]
+    v =~-> { [17, one.two.three, 23] }
+    puts one.two.three                        # => 19
+
 
     OutputAnnotator.uninstall
     OutputAnnotator.save(45)
@@ -128,6 +175,14 @@ class Example
   def get(route)
     pattern = route.gsub(/:(\w+)/, '(?<\1>[^\\/]+)')
     puts pattern                              # => /hello/(?<name>[^\/]+)
+  end
+end
+
+class Widget
+  attr_accessor :flange, :sprocket
+
+  def initialize(flange, sprocket)
+    @flange, @sprocket = flange, sprocket
   end
 end
 
