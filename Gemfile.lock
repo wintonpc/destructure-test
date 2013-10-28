@@ -1,7 +1,7 @@
 PATH
   remote: /home/pwinton/git/destructure
   specs:
-    destructure (0.0.1)
+    destructure (0.0.4)
       activesupport (~> 4.0.0)
       binding_of_caller (~> 0.7.2)
       paramix (~> 2.0.1)

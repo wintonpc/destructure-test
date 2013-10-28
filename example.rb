@@ -24,7 +24,7 @@ class Example
 
     # == destructuring bind involves two simultaneous operations ==
     #    * pattern match
-    #    * bind variables
+    #    * bind values
 
 
     # ruby array destructuring is a bastardized form
@@ -145,7 +145,7 @@ class Example
 
     # splatting
     v = [1,2,3,4,5,6,7,8,9]
-    v =~-> { [1,2,@@stuff, 9] }               # '@@' indicates a splat
+    v =~-> { [1, 2, @@stuff, 9] }             # '@@' indicates a splat
     puts stuff.inspect                        # => [3, 4, 5, 6, 7, 8]
 
     # pattern variables can be pretty much anything that goes on
@@ -165,6 +165,14 @@ class Example
     v =~-> { [17, one.two.three, 23] }
     puts one.two.three                        # => 19
 
+    # use 'lit()' to match the value of an expression rather than bind it
+    q = 3
+    puts ([1,2,3] =~-> { [1,2,lit(q)] }).inspect # => #<OpenStruct>
+    puts ([1,2,4] =~-> { [1,2,lit(q)] }).inspect # => nil
+    @my_var = 789
+    puts (789 =~-> { lit(@my_var) }).inspect  # => #<OpenStruct>
+    puts (456 =~-> { lit(@my_var) }).inspect  # => nil
+
     # specify the same variable multiple times in the pattern
     # to require those parts to match
     puts ([1,2,3] =~-> { [x,2,x] }).inspect   # => nil
@@ -173,6 +181,21 @@ class Example
     # use wildcards (underscore) when you don't care
     puts ([1, 2, 'ack!$&@'] =~-> { [1, 2, _] }).inspect # => #<OpenStruct>
     puts ([1, 2, 'ack!$&@'] =~-> { [1, 2, 3] }).inspect # => nil
+
+    # you can specify alternative patterns, like in regexes
+    puts (:foo =~-> { :foo | :bar }).inspect  # => #<OpenStruct>
+    puts (:bar =~-> { :foo | :bar }).inspect  # => #<OpenStruct>
+    puts (:baz =~-> { :foo | :bar }).inspect  # => nil
+
+    # bind a variable while continuing to match substructure
+    v = ['hello', 'starting']
+    v =~-> { [ greeting = String, participle = /(?<verb>.*)ing$/ ] }
+    puts greeting                             # => hello
+    puts participle                           # => starting
+    puts verb                                 # => start
+
+    v = [:not_a_string, 'starting']
+    puts (v =~-> { [ greeting = String, participle = /(?<verb>.*)ing$/ ] }).inspect # => nil
 
     OutputAnnotator.uninstall
     OutputAnnotator.save(45)
