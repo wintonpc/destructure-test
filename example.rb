@@ -166,13 +166,13 @@ class Example
     v =~-> { [17, one.two.three, 23] }
     puts one.two.three                             # => 19
 
-    # use 'lit()' to match the value of an expression rather than bind it
+    # use '!' to match the value of an expression rather than bind it
     q = 3
-    puts ([1,2,3] =~-> { [1,2,lit(q)] }).inspect   # => #<OpenStruct>
-    puts ([1,2,4] =~-> { [1,2,lit(q)] }).inspect   # => nil
+    puts ([1,2,3] =~-> { [1,2,!q] }).inspect       # => #<OpenStruct>
+    puts ([1,2,4] =~-> { [1,2,!q] }).inspect       # => nil
     @my_var = 789
-    puts (789 =~-> { lit(@my_var) }).inspect       # => #<OpenStruct>
-    puts (456 =~-> { lit(@my_var) }).inspect       # => nil
+    puts (789 =~-> { !@my_var }).inspect           # => #<OpenStruct>
+    puts (456 =~-> { !@my_var }).inspect           # => nil
 
     # specify the same variable multiple times in the pattern
     # to require those parts to match
