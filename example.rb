@@ -49,7 +49,7 @@ class Example
     # that's about the extent of ruby's array destructuring power.
     # nested arrays cannot be destructured in a single step
     v = [1,[2,3],4]
-    #a, [b,c], d = v                     # => syntax error
+    #a, [b,c], d = v                               # => syntax error
 
     # but you can do it multiple steps
     a, temp, d = v
@@ -70,12 +70,6 @@ class Example
     puts a.inspect                                 # => 1
     puts b.inspect                                 # => 2
     puts c.inspect                                 # => nil
-
-
-    # motivating examples:
-    # * method argument matching
-    # * java -> ruby code converter
-    # * client side of API
 
 
     # let's see what we can do within the confines of Ruby's syntax...
@@ -109,10 +103,17 @@ class Example
     puts b                                         # => 2
 
     # order doesn't matter. the pattern specifies a subset that must match
-    v = { q: 5, r: 9, p: 42, s: 99 }
+    v = { q: 5, r: 9, t: 42, u: 99 }
     v =~-> { { p: a, r: b } }
-    puts a                                         # => 42
-    puts b                                         # => 9
+    puts a                                         # => 1
+    puts b                                         # => 2
+
+    # bind to the hash key names, for simplicity
+    v =~-> { Hash[q, r, t, u] }
+    puts q.inspect                                 # => 5
+    puts r.inspect                                 # => 9
+    puts t.inspect                                 # => 42
+    puts u.inspect                                 # => 99
 
     # objects
 
@@ -146,7 +147,7 @@ class Example
 
     # splatting
     v = [1,2,3,4,5,6,7,8,9]
-    v =~-> { [1, 2, @@stuff, 9] }             # '@@' indicates a splat
+    v =~-> { [1, 2, @@stuff, 9] }                  # '@@' indicates a splat
     puts stuff.inspect                             # => [3, 4, 5, 6, 7, 8]
 
     # pattern variables can be pretty much anything that goes on
@@ -167,9 +168,9 @@ class Example
     puts one.two.three                             # => 19
 
     # use '!' to match the value of an expression rather than bind the expression
-    q = 3
-    puts ([1, 2, 3] =~-> { [1, 2, !q] }).inspect   # => #<OpenStruct>
-    puts ([1, 2, 4] =~-> { [1, 2, !q] }).inspect   # => nil
+    y = 3
+    puts ([1, 2, 3] =~-> { [1, 2, !y] }).inspect   # => #<OpenStruct>
+    puts ([1, 2, 4] =~-> { [1, 2, !y] }).inspect   # => nil
     @my_var = 789
     puts (789 =~-> { !@my_var }).inspect           # => #<OpenStruct>
     puts (456 =~-> { !@my_var }).inspect           # => nil
@@ -197,6 +198,40 @@ class Example
 
     v = [:not_a_string, 'starting']
     puts (v =~-> { [ greeting = String, participle = /(?<verb>.*)ing$/ ] }).inspect # => nil
+
+    # you can use =~-> in case/when
+    case_statement_with_wobbly_rocket = Class.new do
+      def run(v)
+        case
+          when v =~-> { [4,5,x] }
+            puts x
+          when v =~-> { [1,2,x] }
+            puts x                                 # => 3
+        end
+      end
+    end
+    case_statement_with_wobbly_rocket.new.run([1,2,3])
+
+    # If you find yourself using case/when frequently, there is
+    # a different syntax for that.
+    # This has the added benefit of not mucking with your locals;
+    # captured variables go in an environment.
+    case_statement_with_special_matcher = Class.new do
+
+      include Destructure[:matcher_name => :matches,  # choose your matcher name
+                          :env_name => :m]            # and place to stash captured variables
+
+      def run(v)
+        case v
+          when matches { [4,5,x] }
+            puts m.x
+          when matches { [1,2,x] }
+            puts m.x                               # => 3
+        end
+      end
+
+    end
+    case_statement_with_special_matcher.new.run([1,2,3])
 
     StaticAnalysisExample.new.run
 
