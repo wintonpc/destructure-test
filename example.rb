@@ -1,6 +1,6 @@
 require 'destructure/magic'
 require_relative './output_annotator'
-require_relative './motivators/3_static'
+require_relative './motivators/4_static'
 require_relative './motivators/quicksort'
 
 class Example
@@ -52,7 +52,7 @@ class Example
     v = [1,[2,3],4]
     #a, [b,c], d = v                               # => syntax error
 
-    # but you can do it multiple steps
+    # but you can do it in multiple steps
     a, temp, d = v
     b, c = temp
     puts a                                         # => 1
@@ -105,9 +105,9 @@ class Example
 
     # order doesn't matter. the pattern specifies a subset that must match
     v = { q: 5, r: 9, t: 42, u: 99 }
-    v =~-> { { p: a, r: b } }
-    puts a                                         # => 1
-    puts b                                         # => 2
+    v =~-> { { u: a, r: b } }
+    puts a                                         # => 99
+    puts b                                         # => 9
 
     # bind to the hash key names, for simplicity
     v =~-> { Hash[q, r, t, u] }

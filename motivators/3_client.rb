@@ -26,3 +26,22 @@ def handle_response(response)
       handle_failed_conversion(msg, server, sample_path)
   end
 end
+
+
+# without pattern matching:
+
+def handle_response(response)
+  if response.success
+    handle_success(response[:request])
+  else
+    handle_failure(response[:error_message], response[:hostname], response[:request])
+  end
+end
+
+def handle_success(request)
+  quantitate_batch_if_converted(request[:customer], request[:batch_id])
+end
+
+def handle_failure(msg, server, request)
+  handle_failed_conversion(msg, server, request[:sample_path])
+end

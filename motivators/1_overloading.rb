@@ -66,7 +66,7 @@ def write_to_log(*args)
       # log to STDOUT
     when args =~ [file = File, s]
       # log to File object
-    when args =~ [fn, s]
+    when args =~ [fn = String, s]
       # log to file path
     else
       raise "invalid arguments: #{args}"
