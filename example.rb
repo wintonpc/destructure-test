@@ -1,6 +1,7 @@
 require 'destructure/magic'
 require_relative './output_annotator'
-require_relative './motivators/static'
+require_relative './motivators/3_static'
+require_relative './motivators/quicksort'
 
 class Example
   def run
@@ -171,9 +172,11 @@ class Example
     y = 3
     puts ([1, 2, 3] =~-> { [1, 2, !y] }).inspect   # => #<OpenStruct>
     puts ([1, 2, 4] =~-> { [1, 2, !y] }).inspect   # => nil
+    puts ([1, 2, 4] =~-> { [1, 2, y] }).inspect    # => #<OpenStruct y=4>
     @my_var = 789
     puts (789 =~-> { !@my_var }).inspect           # => #<OpenStruct>
     puts (456 =~-> { !@my_var }).inspect           # => nil
+    puts (456 =~-> { @my_var }).inspect            # => #<OpenStruct @my_var=456>
 
     # specify the same variable multiple times in the pattern
     # to require those parts to match
@@ -234,6 +237,8 @@ class Example
     case_statement_with_special_matcher.new.run([1,2,3])
 
     StaticAnalysisExample.new.run
+
+    puts [6,5,2,7,8,3,4,0,9,1].qsort.inspect       # => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     OutputAnnotator.uninstall
     OutputAnnotator.save(50)
