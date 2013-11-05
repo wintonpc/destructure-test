@@ -8,7 +8,7 @@ class Example
 
     OutputAnnotator.install
 
-    # == 'destructuring bind' operation ==
+    # == destructuring assignment ==
     # you're already familiar with special cases of it..
 
     # regex
@@ -24,12 +24,12 @@ class Example
       "Hello #{params[:name]}!"
     end
 
-    # == destructuring bind involves two simultaneous operations ==
+    # == destructuring assignment involves two simultaneous operations ==
     #    * pattern match
     #    * bind values
 
 
-    # ruby array destructuring is a bastardized form
+    # ruby array destructuring is a weakened form
     v = [1,2,3]
     a, b, c = v
     puts a                                         # => 1
@@ -110,7 +110,7 @@ class Example
     puts b                                         # => 9
 
     # bind to the hash key names, for simplicity
-    v =~-> { Hash[q, r, t, u] }
+    v =~-> { Hash[q, r, t, u] }                    # v =~-> { { q: q, r: r, t: t, u: u } }
     puts q.inspect                                 # => 5
     puts r.inspect                                 # => 9
     puts t.inspect                                 # => 42
@@ -133,7 +133,7 @@ class Example
     match_result = v =~-> { OpenStruct[flange, sprocket] }
     puts match_result.inspect                      # => nil
 
-    # pattern fields must be present, else match fails
+    # pattern attributes must be present, else match fails
     match_result = v =~-> { Object[flange, sprocket, whizz] }
     puts match_result.inspect                      # => nil
 
@@ -148,7 +148,7 @@ class Example
 
     # splatting
     v = [1,2,3,4,5,6,7,8,9]
-    v =~-> { [1, 2, @@stuff, 9] }                  # '@@' indicates a splat
+    v =~-> { [1, 2, ~stuff, 9] }                   # '~' indicates a splat
     puts stuff.inspect                             # => [3, 4, 5, 6, 7, 8]
 
     # pattern variables can be pretty much anything that goes on

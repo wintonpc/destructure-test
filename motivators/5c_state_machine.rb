@@ -41,6 +41,7 @@ class InstrumentStateMachine
           @ascent_gateway.sample_data(id, data)
         when event =~ BatchCompleted[batch_name]
           @ascent_gateway.batch_completed(batch_name)
+          idle
         # events from ascent
         when event =~ { request: 'reinject', sample_id: id }
           @instrument_gateway.request_reinject(id)

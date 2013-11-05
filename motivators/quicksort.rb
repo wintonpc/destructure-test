@@ -8,7 +8,7 @@ class Array
     case self
       when match { [] }
         []
-      when match { [ pivot, @@rest ]}
+      when match { [ pivot, ~rest ]}
         m.rest.select{|x| x < m.pivot}.qsort + [m.pivot] + m.rest.select{|x| x >= m.pivot}.qsort
     end
   end

@@ -1,0 +1,11 @@
+digraph G {
+
+node [ shape=rect ]
+rankdir=LR
+
+ascent -> state_machine [ label="queries + commands" ]
+state_machine -> ascent [ label="events + data" ]
+instrument -> state_machine [ label="events + data" ]
+state_machine -> instrument [ label="queries + commands" ]
+
+}

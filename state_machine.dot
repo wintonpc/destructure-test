@@ -1,0 +1,15 @@
+digraph G {
+
+node [ shape=circle, fixedsize=true, width=1.1, height=1.1 ]
+rankdir=LR
+
+disconnected -> idle [ label = ":connection_established" ]
+idle -> running [ label = "BatchStarted" ]
+idle -> disconnected [ label = ":connection_lost" ]
+running -> running [ label = "SampleData, reinject request" ]
+running -> idle [ label = "BatchCompleted" ]
+running -> aborting [ label = "'abort batch' request" ]
+aborting -> aborting [ label = ":timed_out" ]
+aborting -> idle [ label = "BatchAborted" ]
+
+}
